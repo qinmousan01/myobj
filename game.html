@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>魔塔游戏</title>
+    <style>
+        .box {
+            width: 850px;
+            height: 650px;
+            background-color: green;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            margin: auto;
+            font-size: 0;
+        }
+
+        .gamebox {
+            width: 650px;
+            height: 650px;
+            float: left;
+        }
+
+        .props {
+            width: 200px;
+            height: 650px;
+            float: left;
+            background-color: #ccc;
+            background-image: url(./imgs/0.jpg);
+            font-size: 28px;
+
+        }
+
+        .props p {
+            padding: 5px 0 0px 20px;
+            color: aliceblue;
+        }
+
+        #key1 {
+            padding-left: 40px;
+        }
+
+        .tips {
+            font-size: 20px;
+            color: pink;
+        }
+
+        .tips1 {
+            margin: 10px 0;
+            color: chartreuse;
+        }
+        .qia{
+            
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div class="gamebox"></div>
+        <div class="props">
+            <p class="qia"><span>第</span>&nbsp;&nbsp;<span id="guan">1</span>&nbsp;&nbsp;<span>关</span></p>
+            <p>生命值：<span id="hp">100</span></p>
+            <p>攻击力：<span id="attack">100</span></p>
+            <p>
+                <img src="./imgs/5.jpg" alt="">
+                <span id="key1">0</span>
+                <span>个</span>
+            </p>
+            <br>
+            <!-- <p>防御力：100</p> -->
+            <p><span>击杀</span><img src="./imgs/guai.jpg" alt="">&nbsp;<span id="guai">0</span>&nbsp;<span>个</span>
+                <p><span>击杀</span><img src="./imgs/10.jpg" alt="">&nbsp;<span id="guai2">0</span>&nbsp;<span>个</span>
+                </p>
+                <!-- <p><img src="./imgs/guai.jpg" alt="">
+                防御120</p>
+            <p><img src="./imgs/10.jpg" alt="">
+                防御220</p> -->
+                <div class="tips tips1">键盘上下左右控制英雄</div>
+                <div class="tips">tips:攻击力大于怪兽生命值能杀死怪兽通行</div>
+                <div class="tips">英雄生命值小于0会死亡，重新开始游戏</div>
+        </div>
+    </div>
+
+    <script>
+        class Game {
+            constructor(gamebox) {
+                this.gamebox = gamebox;
+                this.gameboxwidth = parseInt(getComputedStyle(gamebox, null).width)
+                this.gameboxheight = parseInt(getComputedStyle(gamebox, null).height)
+                this.array0 = [
+                    [2, 8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 5, 2, 0, 0, 1, 0, 0, 1, 0, 5, 7],
+                    [2, 0, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 2, 0, 0, 1, 8, 4, 8, 5, 0, 2],
+                    [2, 0, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2],
+                    [2, 0, 2, 0, 0, 4, 3, 8, 8, 0, 0, 2],
+                    [2, 0, 2, 0, 0, 5, 3, 8, 0, 0, 0, 2],
+                    [2, 0, 2, 2, 2, 2, 3, 2, 2, 2, 1, 2],
+                    [2, 0, 0, 0, 8, 8, 4, 2, 0, 6, 0, 2],
+                    [2, 0, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2],
+                    [2, 2, 2, 2, 2, 5, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ]
+                this.array1 = [
+                    [2, 8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 5, 2, 0, 0, 1, 0, 0, 1, 0, 5, 7],
+                    [2, 0, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 2, 0, 0, 1, 8, 4, 8, 5, 0, 2],
+                    [2, 0, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2],
+                    [2, 0, 2, 0, 0, 4, 3, 8, 8, 0, 0, 2],
+                    [2, 0, 2, 0, 0, 5, 3, 8, 0, 0, 0, 2],
+                    [2, 0, 2, 2, 2, 2, 3, 2, 2, 2, 1, 2],
+                    [2, 0, 0, 0, 8, 8, 4, 2, 0, 6, 0, 2],
+                    [2, 0, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2],
+                    [2, 2, 2, 2, 2, 5, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ]
+                this.array2 = [
+                    [2, 9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 6, 2, 0, 1, 0, 0, 8, 8, 0, 5, 2],
+                    [2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 2, 0, 1, 0, 8, 4, 8, 5, 0, 2],
+                    [2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 3, 2],
+                    [2, 0, 2, 0, 2, 4, 3, 8, 8, 0, 7, 2],
+                    [2, 0, 2, 0, 1, 5, 3, 8, 0, 0, 0, 2],
+                    [2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 0, 0, 8, 8, 4, 0, 0, 0, 0, 2],
+                    [2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2],
+                    [2, 3, 4, 8, 2, 5, 0, 3, 3, 8, 4, 2],
+                    [2, 0, 5, 4, 2, 0, 0, 0, 8, 4, 5, 2],
+                ]
+                this.array3 = [
+                    [2, 7, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 0, 2, 1, 0, 0, 8, 8, 0, 5, 2],
+                    [2, 2, 0, 5, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 2, 5, 0, 2, 8, 4, 8, 5, 0, 2],
+                    [2, 0, 2, 2, 0, 4, 2, 2, 2, 2, 3, 2],
+                    [2, 4, 2, 0, 2, 10, 4, 2, 8, 0, 7, 2],
+                    [2, 5, 2, 0, 1, 2, 10, 4, 2, 0, 0, 2],
+                    [2, 0, 2, 0, 2, 2, 2, 10, 0, 2, 2, 2],
+                    [2, 0, 0, 0, 8, 8, 4, 2, 0, 0, 2, 2],
+                    [2, 1, 2, 2, 2, 2, 1, 2, 2, 0, 2, 2],
+                    [2, 3, 4, 8, 2, 5, 0, 3, 3, 8, 6, 9],
+                    [2, 0, 5, 4, 2, 0, 0, 0, 8, 2, 2, 2],
+                ]
+                this.array4 = [
+                    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 0, 10, 0, 0, 0, 0, 8, 8, 0, 5, 7],
+                    [2, 0, 4, 5, 2, 2, 1, 2, 2, 2, 2, 2],
+                    [2, 0, 2, 5, 2, 2, 8, 4, 8, 5, 0, 2],
+                    [2, 0, 2, 2, 2, 4, 2, 2, 2, 2, 3, 2],
+                    [2, 4, 2, 0, 2, 2, 4, 2, 8, 0, 2, 2],
+                    [2, 5, 2, 0, 1, 10, 10, 4, 2, 0, 0, 2],
+                    [2, 0, 2, 0, 2, 2, 2, 10, 0, 2, 2, 2],
+                    [2, 0, 0, 0, 8, 8, 4, 2, 0, 0, 2, 2],
+                    [2, 1, 2, 2, 2, 2, 1, 2, 2, 0, 2, 2],
+                    [2, 3, 4, 8, 2, 5, 0, 3, 3, 8, 2, 0],
+                    [2, 0, 5, 6, 9, 0, 10, 0, 8, 2, 2, 2],
+                ]
+                this.array5 = [
+                    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 2, 2, 2, 3, 3, 3, 3, 10, 10, 10, 2],
+                    [2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 10, 2],
+                    [2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 10, 2],
+                    [2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 10, 2],
+                    [2, 2, 2, 2, 2, 7, 2, 2, 2, 2, 8, 2],
+                    [2, 4, 4, 6, 9, 2, 8, 8, 8, 8, 8, 2],
+                    [2, 4, 2, 2, 2, 2, 5, 2, 2, 2, 2, 2],
+                    [2, 4, 2, 2, 2, 8, 8, 8, 8, 8, 8, 2],
+                    [2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 8, 2],
+                    [2, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 2],
+                    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                ]
+                this.array6 = [
+                    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 8, 10, 3, 4, 8, 4, 8, 8, 8, 2, 2],
+                    [2, 4, 2, 2, 2, 2, 2, 2, 2, 8, 2, 2],
+                    [2, 3, 2, 4, 4, 4, 4, 4, 2, 8, 2, 2],
+                    [2, 10, 2, 4, 2, 9, 2, 4, 2, 8, 2, 2],
+                    [2, 8, 2, 4, 2, 6, 4, 4, 2, 8, 2, 2],
+                    [2, 4, 2, 4, 2, 2, 2, 2, 2, 8, 2, 2],
+                    [2, 3, 2, 4, 4, 8, 8, 8, 8, 8, 2, 2],
+                    [2, 10, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    [2, 8, 4, 4, 4, 5, 10, 3, 4, 10, 5, 2],
+                    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 2],
+                    [2, 2, 2, 2, 2, 7, 5, 4, 5, 5, 5, 2],
+                ]
+                this.arrayAll = [this.array1, this.array2, this.array3, this.array4, this.array5, this.array6];
+                this.floor = 0;
+                this.array = this.arrayAll[this.floor];
+
+                this.heroProp = {
+                    hp: 100,
+                    attack: 100,
+                    key: 0
+                };
+                this.redWater = {
+                    hp: 10
+                }
+                this.redStone = {
+                    attack: 10
+                }
+                this.power = {
+                    num: 0
+                }
+                this.power1 = {
+                    num: 0
+                }
+                this.monster1 = {
+                    hp: 120,
+                    attack: 100
+                }
+                this.monster2 = {
+                    hp: 220,
+                    attack: 100
+                }
+                this.guan={
+                    num:1
+                }
+            }
+
+            // 地图
+            setMap() {
+                // console.log(this.gameboxwidth);
+                // console.log(this.gameboxheight);
+                gamebox.innerHTML = '';
+                for (let i = 0; i < this.array.length; i++) {
+                    for (let j = 0; j < this.array[i].length; j++) {
+                        // console.log(this.array[i][j])
+                        var dom = document.createElement('img');
+                        var domHeight = this.gameboxheight / this.array.length
+                        var domWidth = this.gameboxheight / this.array[i].length
+                        dom.style.width = domWidth + 'px';
+                        dom.style.height = domHeight + 'px';
+                        this.gamebox.appendChild(dom)
+                        if (this.array[i][j] == 0) {
+                            dom.src = 'imgs/0.jpg'
+                        } else if (this.array[i][j] == 1) {
+                            dom.src = 'imgs/2.jpg'
+                        } else if (this.array[i][j] == 4) {
+                            dom.src = 'imgs/4.jpg'
+                        } else if (this.array[i][j] == 5) {
+                            dom.src = 'imgs/5.jpg'
+                        } else if (this.array[i][j] == 3) {
+                            dom.src = 'imgs/guai.jpg'
+                        } else if (this.array[i][j] == 7) {
+                            dom.src = 'imgs/7.jpg'
+                        } else if (this.array[i][j] == 9) {
+                            dom.src = 'imgs/shang.jpg'
+                        } else if (this.array[i][j] == 10) {
+                            dom.src = 'imgs/10.jpg'
+                        }
+                        else if (this.array[i][j] == 8) {
+                            dom.src = 'imgs/8.jpg'
+                        } else if (this.array[i][j] == 2) {
+                            dom.src = 'imgs/3.jpg'
+                        } else if (this.array[i][j] == 6) {
+                            dom.src = 'imgs/6.jpg'
+                        }
+                    }
+                }
+            }
+
+
+
+            // 属性加入页面
+            add() {
+                var hps = document.getElementById("hp");
+                var attacks = document.getElementById("attack");
+                var keys = document.getElementById("key1");
+                var guais = document.getElementById("guai");
+                var guas = document.getElementById("guai2");
+                var guans = document.getElementById("guan");
+                hps.innerHTML = this.heroProp.hp;
+                attacks.innerHTML = this.heroProp.attack;
+                keys.innerHTML = this.heroProp.key;
+                guais.innerHTML = this.power.num;
+                guas.innerHTML = this.power1.num;
+                guans.innerHTML=this.guan.num;
+            }
+
+
+            // 判断边界
+            jugdeg(i, j) {
+                if (i < 0 || i > this.array.length - 1 || j < 0 || j > this.array[i].length - 1) {
+                    return false;
+                } else {
+                    if (this.meetAll(i, j)) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+
+            // 判定物品和墙壁及其他
+            meetAll(i, j) {
+                if (this.array[i][j] == 2) {
+                    return false;
+                } else if (this.array[i][j] == 5) {
+                    this.array[i][j] = 0;
+
+                    this.heroProp.key += 1;
+                    this.add()
+                    return true;
+                } else if (this.array[i][j] == 4) {
+
+                    this.array[i][j] = 0;
+                    this.heroProp.hp += this.redWater.hp;
+                    this.add()
+                    return true;
+                } else if (this.array[i][j] == 8) {
+                    this.array[i][j] = 0;
+                    this.heroProp.attack += this.redStone.attack;
+                    this.add()
+                    return true;
+
+                } else if (this.array[i][j] == 7) {
+                    if (this.floor >= this.arrayAll.length - 1) {
+                        // alert("恭喜通关")
+                        if (confirm("恭喜通关，是否重新开始游戏")) {
+                            window.location.reload();
+                            return false
+                        }
+                        return false
+                    }
+                    alert("成功闯入下一关")
+                    this.floor++;
+                    this.guan.num++;
+                    this.add()
+                    this.array = this.arrayAll[this.floor];
+                    this.setMap();
+                    
+                    return false;
+                } else if (this.array[i][j] == 9) {
+                    if (this.floor <= 0) {
+                        return false
+                    }
+                    alert("进入上一关")
+                    this.floor--;
+                    this.guan.num--;
+                    this.add()
+                    this.array = this.arrayAll[this.floor];
+                    this.setMap();
+                    return false;
+                } else if (this.array[i][j] == 3) {
+                    if (this.heroProp.hp < 10) {
+                        alert("你的生命值过低,被怪物打死");
+
+                       
+                        this.array = this.array0;
+                        this.heroProp = {
+                            hp: 100,
+                            attack: 100,
+                            key: 0
+                        };
+                        this.power = {
+                            num: 0
+                        }
+                        this.power1 = {
+                            num: 0
+                        }
+                        this.add();
+                        this.floor = 0;
+                        this.setMap();
+
+
+                        window.location.reload();
+                        return false;
+                    } else {
+                        if (this.heroProp.attack > this.monster1.hp) {
+                            this.array[i][j] = 0;
+                            this.heroProp.hp -= 10;
+                            this.power.num++;
+                            this.add()
+                            return true;
+                        } else {
+                            // this.array[i][j]=start;
+                            alert("你走吧，怪物不想伤你")
+
+
+                            console.log(1)
+                            return false;
+                        }
+                    }
+
+                } else if (this.array[i][j] == 10) {
+                    if (this.heroProp.hp < 20) {
+                        alert("你的生命值过低,被怪物打死")
+
+                        this.array = this.array0;
+                        this.heroProp = {
+                            hp: 100,
+                            attack: 100,
+                            key: 0
+                        };
+                        this.power = {
+                            num: 0
+                        }
+                        this.power1 = {
+                            num: 0
+                        }
+                        this.add();
+                        this.floor = 0;
+                        this.setMap()
+
+                        window.location.reload();
+                        return false;
+                    } else {
+                        if (this.heroProp.attack > this.monster2.hp) {
+                            this.array[i][j] = 0;
+                            this.heroProp.hp -= 20;
+                            this.power1.num++;
+                            this.add()
+                            return true;
+                        } else {
+                            // this.array[i][j]=start;
+                            alert("你走吧，打不过大怪物")
+                            console.log(1)
+                            return false;
+                        }
+                    }
+
+                } else if (this.array[i][j] == 1) {
+
+                    if (this.heroProp.key > 0) {
+                        this.array[i][j] = 0;
+                        this.heroProp.key -= 1;
+                        this.add();
+                        return true;
+                    } else {
+                        alert("需要金钥匙开门")
+                        console.log(1)
+                        return false
+                    }
+
+
+                }
+                return true;
+            }
+
+
+            // 寻找英雄位置
+            getheroposition() {
+                for (let i = 0; i < this.array.length; i++) {
+                    for (let j = 0; j < this.array[i].length; j++) {
+                        if (this.array[i][j] == 6) {
+                            return {
+                                i: i,
+                                j: j
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            // 移动(交换位置)
+            changeposition(i, j, nexti, nextj) {
+                if (this.jugdeg(nexti, nextj)) {
+                    var temp = this.array[i][j];
+                    this.array[i][j] = this.array[nexti][nextj];
+                    this.array[nexti][nextj] = temp;
+                    this.setMap();
+
+                } else {
+                    // console.log(this.jugdeg(nexti, nextj))
+                    console.log("超出边界")
+                }
+
+            }
+
+            // 移动
+            move() {
+                window.onkeydown = function (ev) {
+                    var heroP = this.getheroposition();
+                    var heroPI = heroP.i;
+                    var heroPJ = heroP.j;
+                    if (ev.keyCode == 37) {
+                        this.changeposition(heroPI, heroPJ, heroPI, heroPJ - 1)
+                    } else if (ev.keyCode == 38) {
+                        this.changeposition(heroPI, heroPJ, heroPI - 1, heroPJ)
+                    } else if (ev.keyCode == 39) {
+                        this.changeposition(heroPI, heroPJ, heroPI, heroPJ + 1)
+                    } else if (ev.keyCode == 40) {
+                        this.changeposition(heroPI, heroPJ, heroPI + 1, heroPJ)
+                    }
+                }.bind(this)
+            }
+
+            init() {
+                this.setMap();
+                this.move();
+                // this.add();
+            }
+        }
+        var gamebox = document.getElementsByClassName('gamebox')[0]
+        var newGame = new Game(gamebox)
+        newGame.init()
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
